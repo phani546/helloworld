@@ -12,7 +12,7 @@ pipeline{
               sh 'docker version'
           }
         }
-        stage(Build){
+        stage('Build'){
             steps{
                 sh 'mvn clean compile'
             }
