@@ -36,7 +36,7 @@ pipeline{
             steps{
                script{
                      docker.withRegistry('https://068160335013.dkr.ecr.us-east-1.amazonaws.com','ecr:us-east-1:ECR-PUSH'){
-                      def customImage = docker.build("hello-world:${env.BUILD_ID}")
+                      def customImage = docker.build("helloworld:${env.BUILD_ID}")
                       customImage.push()
                 }
               }
