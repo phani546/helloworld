@@ -32,21 +32,10 @@ pipeline{
                 sh 'mvn package -DskipTests'
            }
         }
-        stage('Build Docker Image'){
-            steps{
-                script{
-                    dockerImage = docker.build(068160335013.dkr.ecr.us-east-1.amazonaws.com/helloworld:${env.BUILD_TAG}
-                }
-            }
-        }
-        stage('Push Docker Image'){
-            steps{
-                script{
-                    docker.withRegistry('https://068160335013.dkr.ecr.us-east-1.amazonaws.com','ecr:us-east-1:ECR-PUSH'){
-                        dockerImage.push();
-                        dockerImage.push('latest');
-                    }
-                }
+        stage('Build and Push Docker Image'){
+            docker.withRegistry('https://068160335013.dkr.ecr.us-east-1.amazonaws.com','ecr:us-east-1:ECR-PUSH'){
+                def customImage = docker.build("hello-world:${env.BUILD_ID}")
+                customImage.push()
             }
         }
     }
