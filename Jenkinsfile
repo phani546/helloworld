@@ -33,9 +33,13 @@ pipeline{
            }
         }
         stage('Build and Push Docker Image'){
-            docker.withRegistry('https://068160335013.dkr.ecr.us-east-1.amazonaws.com','ecr:us-east-1:ECR-PUSH'){
-                def customImage = docker.build("hello-world:${env.BUILD_ID}")
-                customImage.push()
+            steps{
+               script{
+                     docker.withRegistry('https://068160335013.dkr.ecr.us-east-1.amazonaws.com','ecr:us-east-1:ECR-PUSH'){
+                      def customImage = docker.build("hello-world:${env.BUILD_ID}")
+                      customImage.push()
+                }
+              }
             }
         }
     }
