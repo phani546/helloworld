@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: hello-world-app
+  name: hello-world-app
+  namespace: default
+spec:
+  replicas: 2
+  minReadySeconds: 30
+  selector:
+    matchLabels:
+      app: hello-world-app
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: rollingUpdate
+  template:
+    metadata:
+      labels:
+        app: hello-world-app
+    spec:
+      containers:
+        - name: hello-world-app
+          image: in28min/currency-exchange:0.0.1-RELEASE
+          imagePolicy: IfNotPresent
+          ports:
+            - name: liveness-port
+              containerPort: 8000  #Microservice Port.
+          resources:
+            requests:
+              cpu : 100m
+              memory: 512mi
+            limits:
+              cpu: 400m
+              memory: 1024mi 
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: liveness-port
+            failureThreshold: 5
+            periodSeconds: 10
+            initialDelaySeconds: 60
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: liveness-probe
+            failureThreshold: 5
+            periodSeconds: 10
+            initialDelaySeconds: 60
+    restartPolicy: Always
+    terminationGracePeriodSeconds:  30
+---
+appVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: hello-world-app
+  name: hello-world-app
+  namespace: default
+spec:
+  ports:
+    port: 8100
+    protocol: TCP
+    targetPort : 8100
+  selector:
+    app: hello-world-app
+  sessionAffinity: none
+  type: loadBalancer
